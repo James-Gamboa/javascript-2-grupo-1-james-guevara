@@ -36,7 +36,7 @@ class Empleado extends Persona {
   }
 }
 
-const empleado1 = new Empleado("James", "Gamboa", 2, "22", "Heredia", 300, "Desarrollador Junior", "Tecnologia", "2021");
+const empleado1 = new Empleado("James", "Gamboa", 2, 22, "Heredia", 300, "Desarrollador Junior", "Tecnologia", "2021");
 empleado1.imprimirSueldo();
 
 
@@ -66,7 +66,7 @@ class Desarrollador extends Empleado {
   }
 }
 
-const desarrollador1 = new Desarrollador("James","Gamboa", 2, "22", "Heredia", 300, "Desarrollador Junior", "Tecnologia", "2021", [
+const desarrollador1 = new Desarrollador("James","Gamboa", 2, 22, "Heredia", 300, "Desarrollador Junior", "Tecnologia", "2021", [
   {nombreDeLenguaje: "JavaScript", conocimiento: 90},
   {nombreDeLenguaje: "Python", conocimiento: 80},
   {nombreDeLenguaje: "Java", conocimiento: 70},
