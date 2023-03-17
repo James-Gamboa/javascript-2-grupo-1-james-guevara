@@ -1,122 +1,202 @@
-// Crear un programa que simule una librería. Debe tener las siguientes características:
-// 1. Debe tener una clase Libreria que tenga las siguientes propiedades:
-//      1.1 Nombre
-//      1.2. Dirección
-//      1.3. Libros // lista de libros
-//      1.4. Comics // lista de comics
-//      1.5. Debe contar un método que permita agregar libros y comics a la librería.
+import { Bookstore } from "./bookstore.js";
+(function () {
+  // @ts-ignore
+  const bookstore1 = new Bookstore("Bookstore", "Calle 1");
+  const sidebar = document.getElementById("sidebar");
+  const menu = ["Show Books", "Show Comics", "Add book", "Add Comic"];
 
-// 2. Debe tener una clase Libro que represente un libro y tenga las siguientes propiedades: título, autor, precio, cantidad y año.
+  const initialize = () => {
+    printBookstoreName();
+    displayMenu();
+    menuFunctionality();
+  };
+  const printBookstoreName = () => {
+    // @ts-ignore
+    sidebar.insertAdjacentHTML(
+      "afterbegin",
+      `<h2 class="title">
+        <i class="fas fa-book"></i> ${bookstore1.getName()}
+      </h2>`
+    );
+  };
+  const createMenu = () => {
+    return menu
+      .map((elem, index) => {
+        return `<li class="menu-item"> 
+        <a href="#" id="${index}">${elem}</a>
+      </li>`;
+      })
+      .join("");
+  };
 
-// 3. Debe tener una clase Comic que herede de Libro y tenga las siguientes propiedades extras: dibujante, editorial, volumen.
+  const displayMenu = () => {
+    // @ts-ignore
+    sidebar.insertAdjacentHTML(
+      "beforeend",
+      `<ul class="menu">${createMenu()}</ul>`
+    );
+  };
 
-// 4. ** Los usuarios no pueden modificar datos de los libros o comics, pero sí pueden modificar la cantidad de libros disponibles, o el año, de igual forma deben ser propiedades privadas
- //  tener en cuenta que para poder acceder y modificar las propiedades privadas debe usar getters y setters
+  const menuFunctionality = () => {
+    const items = document.querySelectorAll(".menu-item");
+    items.forEach((item) => {
+      item.addEventListener("click", (event) => {
+        // e.stopPropagation(); // esto es para evitar que el evento se extienda/propague al los elementos padres
+        event.preventDefault(); // esto es para evitar que se recargue la página cuando se hace click en el elemento, en este al elemeto li del menu
 
-// 5. Debe haber un método que permita obtener la información completa de un libro o comic, este debe llamarse "getInfo".
+        // @ts-ignore
+        const { id } = event.target;
 
-// 6. En caso de que la cantidad de libros o comics sea 0, debe mostrar un mensaje que diga "No hay ejemplares disponibles".
+        switch (id) {
+          case "0":
+            showBooks();
+            break;
+          case "1":
+            showComics();
+            break;
+          case "2":
+            addBook();
+            break;
+          case "3":
+            addComic();
+            break;
+          default:
+            alert("Esa opción no existe");
+            break;
+        }
+      });
+    });
+  };
 
-
-class Libreria {
-  constructor(nombre, direccion) {
-    this.nombre = nombre;
-    this.direccion = direccion;
-    this.libros = [];
-    this.comics = [];
-  }
-
-  agregarLibro(libro) {
-    this.libros.push(libro);
-  }
-
-  agregarComic(comic) {
-    this.comics.push(comic);
-  }
-}
-
-class Libro {
-  constructor(titulo, autor, precio, cantidad, año) {
-    this._titulo = titulo;
-    this._autor = autor;
-    this._precio = precio;
-    this._cantidad = cantidad;
-    this._año = año;
-  }
-
-  get titulo() {
-    return this._titulo;
-  }
-
-  get autor() {
-    return this._autor;
-  }
-
-  get precio() {
-    return this._precio;
-  }
-
-  get año() {
-    return this._año;
-  }
-
-  set año(año) {
-    this._año = año;
-  }
-
-  get cantidad() {
-    return this._cantidad;
-  }
-
-  set cantidad(cantidad) {
-    this._cantidad = cantidad;
-  }
-
-  getInfo() {
-    if (this.cantidad > 0) {
-      return `${this.titulo}, de ${this.autor}. Precio: ${this.precio} USD. Año de publicación: ${this.año}. Cantidad disponible: ${this.cantidad}`;
-    } else {
-      return `No hay ejemplares disponibles de ${this.titulo}, de ${this.autor}.`;
+  class Book {
+    constructor(title, author, price, stock, year) {
+      this.title = title;
+      this.author = author;
+      this.price = price;
+      this.stock = stock;
+      this.year = year;
     }
   }
-}
 
-class Comic extends Libro {
-  constructor(titulo, autor, precio, cantidad, año, dibujante, editorial, volumen) {
-    super(titulo, autor, precio, cantidad, año);
-    this.dibujante = dibujante;
-    this.editorial = editorial;
-    this.volumen = volumen;
-  }
+  const addBook = () => {
+    const title = prompt("Titulo");
+    const author = prompt("Autor");
+    const price = prompt("Precio");
+    const stock = prompt("Stock");
+    const year = prompt("Año");
 
-  getInfo() {
-    if (this.cantidad > 0) {
-      return `${this.titulo}, de ${this.autor}. Precio: ${this.precio} USD. Año de publicación: ${this.año}. Cantidad disponible: ${this.cantidad}. Dibujante: ${this.dibujante}. Editorial: ${this.editorial}. Volumen: ${this.volumen}.`;
-    } else {
-      return `No hay ejemplares disponibles de ${this.titulo}, de ${this.autor}.`;
+    if (!title || !author || !price || !stock || !year) {
+      alert("Introduzca los datos para todos los campos");
+      return;
+    }
+
+    // @ts-ignore
+    const existingBook = bookstore1
+      .getBooks()
+      .find((book) => book.title === title && book.author === author);
+    if (existingBook) {
+      alert("Este libro ya existe en la librería");
+      return;
+    }
+    // @ts-ignore
+    const book = new Book(title, author, price, stock, year);
+    // @ts-ignore
+    bookstore1.setBook(book);
+  };
+
+  class Comic {
+    constructor(title, publisher, price, stock, issue, year) {
+      this.title = title;
+      this.publisher = publisher;
+      this.price = price;
+      this.stock = stock;
+      this.issue = issue;
+      this.year = year;
     }
   }
-}
 
-// Agregando datos 
-const miLibreria = new Libreria("Libros y Comics", "Calle Falsa 123");
+  const addComic = () => {
+    const title = prompt("Título");
+    const publisher = prompt("Editorial");
+    const price = prompt("Precio");
+    const stock = prompt("Stock");
+    const issue = prompt("Número de edición");
+    const year = prompt("Año");
 
-const libro1 = new Libro("El señor de los anillos", "J.R.R. Tolkien", 20, 5, 1954);
-miLibreria.agregarLibro(libro1);
+    if (!title || !publisher || !price || !stock || !issue || !year) {
+      alert("Por favor, ingrese todos los detalles del cómic.");
+      return;
+    }
 
-const comic1 = new Comic("Watchmen", "Alan Moore", 25, 3, 1986, "Dave Gibbons", "DC Comics", 1);
-miLibreria.agregarComic(comic1);
+    const existingComic = bookstore1
+      .getComic()
+      .find(
+        (comic) =>
+          comic.title === title &&
+          comic.publisher === publisher &&
+          comic.issue === issue
+      );
+    if (existingComic) {
+      alert("Este cómic ya existe en la librería");
+      return;
+    }
 
-const libroSinStock = new Libro("1984", "George Orwell", 15, 0, 1949);
-miLibreria.agregarLibro(libroSinStock);
+    const comic = new Comic(title, publisher, price, stock, issue, year);
+    bookstore1.setComic(comic);
+  };
 
-console.log(miLibreria);
-console.log(libro1.getInfo());
-console.log(comic1.getInfo());
+  const showBooks = () => {
+    console.log("Show Books");
+    const books = bookstore1.getBooks();
+    const mainContent = document.getElementById("main-content");
+    // @ts-ignore
+    mainContent.innerHTML = "";
+    if (books.length > 0) {
+      books.forEach((book) => {
+        const bookElement = document.createElement("div");
+        bookElement.classList.add("book");
+        bookElement.innerHTML = `
+          <h3 class="book-title">Titulo:${book.title}</h3>
+          <p class="book-author">Autor:${book.author}</p>
+          <p class="book-price">Precio:${book.price}</p>
+          <p class="book-stock">Stock:${book.stock}</p>
+          <p class="book-year">Año:${book.year}</p>
+        `;
+        // @ts-ignore
+        mainContent.appendChild(bookElement);
+      });
+    } else {
+      // @ts-ignore
+      mainContent.innerHTML = "<p>No hay libros en la librería</p>";
+    }
+  };
 
-// Cambiar cantidad de libros y año de publicacion
-libro1.cantidad = 2;
-libro1.año = 1954;
+  const showComics = () => {
+    console.log("Show Comics");
+    const comics = bookstore1.getComic();
+    const mainContent = document.getElementById("main-content");
+    // @ts-ignore
+    mainContent.innerHTML = "";
+    if (comics.length > 0) {
+      comics.forEach((comic) => {
+        const comicElement = document.createElement("div");
+        comicElement.classList.add("comic");
+        comicElement.innerHTML = `
+          <h3 class="comic-title">Titulo:${comic.title}</h3>
+          <p class="comic-publisher">Editorial:${comic.publisher}</p>
+          <p class="comic-price">Precio:${comic.price}</p>
+          <p class="comic-stock">Stock:${comic.stock}</p>
+          <p class="comic-issue">Edición:${comic.issue}</p>
+          <p class="comic-year">Año:${comic.year}</p>
+        `;
+        // @ts-ignore
+        mainContent.appendChild(comicElement);
+      });
+    } else {
+      // @ts-ignore
+      mainContent.innerHTML = "<p>No hay cómics en la tienda</p>";
+    }
+  };
 
-console.log(libro1.getInfo());
-console.log(libroSinStock.getInfo());
+  initialize();
+})();
