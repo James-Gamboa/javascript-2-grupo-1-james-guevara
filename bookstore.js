@@ -14,7 +14,7 @@ export class Bookstore {
     return this.books;
   }
 
-  getComic() {
+  getComics() {
     return this.comics;
   }
 

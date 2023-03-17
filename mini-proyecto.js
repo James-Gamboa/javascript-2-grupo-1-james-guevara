@@ -1,4 +1,7 @@
 import { Bookstore } from "./bookstore.js";
+import { Book } from "./book.js";
+import { Comic } from "./comic.js";
+
 (function () {
   // @ts-ignore
   const bookstore1 = new Bookstore("Bookstore", "Calle 1");
@@ -14,11 +17,12 @@ import { Bookstore } from "./bookstore.js";
     // @ts-ignore
     sidebar.insertAdjacentHTML(
       "afterbegin",
-      `<h2 class="title">
-        <i class="fas fa-book"></i> ${bookstore1.getName()}
-      </h2>`
+      `<h1 class="title">
+      <i class="fa-sharp fa-regular fa-book"></i> ${bookstore1.getName()}
+      </h1>`
     );
   };
+
   const createMenu = () => {
     return menu
       .map((elem, index) => {
@@ -68,81 +72,192 @@ import { Bookstore } from "./bookstore.js";
     });
   };
 
-  class Book {
-    constructor(title, author, price, stock, year) {
-      this.title = title;
-      this.author = author;
-      this.price = price;
-      this.stock = stock;
-      this.year = year;
-    }
-  }
-
-  const addBook = () => {
-    const title = prompt("Titulo");
-    const author = prompt("Autor");
-    const price = prompt("Precio");
-    const stock = prompt("Stock");
-    const year = prompt("Año");
-
-    if (!title || !author || !price || !stock || !year) {
-      alert("Introduzca los datos para todos los campos");
-      return;
-    }
-
-    // @ts-ignore
-    const existingBook = bookstore1
-      .getBooks()
-      .find((book) => book.title === title && book.author === author);
-    if (existingBook) {
-      alert("Este libro ya existe en la librería");
-      return;
-    }
-    // @ts-ignore
-    const book = new Book(title, author, price, stock, year);
-    // @ts-ignore
-    bookstore1.setBook(book);
+  const createInput = (type, name) => {
+    const input = document.createElement("input");
+    input.setAttribute("type", type);
+    input.setAttribute("name", name);
+    return input;
   };
 
-  class Comic {
-    constructor(title, publisher, price, stock, issue, year) {
-      this.title = title;
-      this.publisher = publisher;
-      this.price = price;
-      this.stock = stock;
-      this.issue = issue;
-      this.year = year;
+  const createLabel = (text, input) => {
+    const label = document.createElement("label");
+    label.innerHTML = text;
+    label.appendChild(input);
+    return label;
+  };
+
+  const addBook = () => {
+    const form = document.createElement("form");
+
+    const titleInput = createInput("text", "title");
+    const titleLabel = createLabel("Título:", titleInput);
+    form.appendChild(titleLabel);
+
+    const authorInput = createInput("text", "author");
+    const authorLabel = createLabel("Autor:", authorInput);
+    form.appendChild(authorLabel);
+
+    const priceInput = createInput("text", "price");
+    const priceLabel = createLabel("Precio:", priceInput);
+    form.appendChild(priceLabel);
+
+    const stockInput = createInput("text", "stock");
+    const stockLabel = createLabel("Stock:", stockInput);
+    form.appendChild(stockLabel);
+
+    const yearInput = createInput("text", "year");
+    const yearLabel = createLabel("Año:", yearInput);
+    form.appendChild(yearLabel);
+
+    const submitButton = document.createElement("button");
+    submitButton.innerHTML = "Agregar libro";
+    submitButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      const title = titleInput.value;
+      const author = authorInput.value;
+      const price = priceInput.value;
+      const stock = stockInput.value;
+      const year = yearInput.value;
+
+      if (!title || !author || !price || !stock || !year) {
+        alert("Por favor, ingrese todos los detalles del libro");
+        return;
+      }
+
+      const existingBook = bookstore1
+        .getBooks()
+        .find((book) => book.title === title && book.author === author);
+      if (existingBook) {
+        alert("Este libro ya existe en la librería");
+        return;
+      }
+      const book = new Book(title, author, price, stock, year);
+      bookstore1.setBook(book);
+      clearInputs();
+    });
+    form.appendChild(submitButton);
+
+    const clearForm = () => {
+      titleInput.value = "";
+      authorInput.value = "";
+      priceInput.value = "";
+      stockInput.value = "";
+      yearInput.value = "";
+    };
+
+    const clearButton = document.createElement("button");
+    clearButton.innerHTML = "Limpiar formulario";
+    clearButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      clearForm();
+    });
+    form.appendChild(clearButton);
+
+    const mainContent = document.querySelector("#main-content");
+    // @ts-ignore
+    mainContent.innerHTML = "";
+    // @ts-ignore
+    mainContent.appendChild(form);
+
+    function clearInputs() {
+      const inputs = form.getElementsByTagName("input");
+      for (let i = 0; i < inputs.length; i++) {
+        inputs[i].value = "";
+      }
     }
-  }
+  };
 
   const addComic = () => {
-    const title = prompt("Título");
-    const publisher = prompt("Editorial");
-    const price = prompt("Precio");
-    const stock = prompt("Stock");
-    const issue = prompt("Número de edición");
-    const year = prompt("Año");
+    const form = document.createElement("form");
 
-    if (!title || !publisher || !price || !stock || !issue || !year) {
-      alert("Por favor, ingrese todos los detalles del cómic.");
-      return;
+    const titleInput = createInput("text", "title");
+    const titleLabel = createLabel("Título:", titleInput);
+    form.appendChild(titleLabel);
+
+    const publisherInput = createInput("text", "publisher");
+    const publisherLabel = createLabel("Editorial:", publisherInput);
+    form.appendChild(publisherLabel);
+
+    const priceInput = createInput("text", "price");
+    const priceLabel = createLabel("Precio:", priceInput);
+    form.appendChild(priceLabel);
+
+    const stockInput = createInput("text", "stock");
+    const stockLabel = createLabel("Stock:", stockInput);
+    form.appendChild(stockLabel);
+
+    const issueInput = createInput("text", "issue");
+    const issueLabel = createLabel("Edición:", issueInput);
+    form.appendChild(issueLabel);
+
+    const yearInput = createInput("text", "year");
+    const yearLabel = createLabel("Año:", yearInput);
+    form.appendChild(yearLabel);
+
+    const submitButton = document.createElement("button");
+    submitButton.innerHTML = "Agregar cómic";
+    submitButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      const title = titleInput.value;
+      const publisher = publisherInput.value;
+      const price = priceInput.value;
+      const stock = stockInput.value;
+      const issue = issueInput.value;
+      const year = yearInput.value;
+
+      if (!title || !publisher || !price || !stock || !issue || !year) {
+        alert("Por favor, ingrese todos los detalles del cómic");
+        return;
+      }
+
+      const existingComic = bookstore1
+        .getComics()
+        .find(
+          (comic) =>
+            comic.title === title &&
+            comic.publisher === publisher &&
+            comic.issue === issue
+        );
+      if (existingComic) {
+        alert("Este cómic ya existe en la librería");
+        return;
+      }
+
+      const comic = new Comic(title, publisher, price, stock, issue, year);
+      bookstore1.setComic(comic);
+      clearInputs();
+    });
+    form.appendChild(submitButton);
+
+    const clearForm = () => {
+      titleInput.value = "";
+      publisherInput.value = "";
+      priceInput.value = "";
+      stockInput.value = "";
+      issueInput.value = "";
+      yearInput.value = "";
+    };
+
+    const clearButton = document.createElement("button");
+    clearButton.innerHTML = "Limpiar formulario";
+    clearButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      clearForm();
+    });
+    form.appendChild(clearButton);
+
+    const mainContent = document.querySelector("#main-content");
+    // @ts-ignore
+    mainContent.innerHTML = "";
+    // @ts-ignore
+    mainContent.appendChild(form);
+
+    function clearInputs() {
+      const inputs = form.getElementsByTagName("input");
+      for (let i = 0; i < inputs.length; i++) {
+        inputs[i].value = "";
+      }
     }
-
-    const existingComic = bookstore1
-      .getComic()
-      .find(
-        (comic) =>
-          comic.title === title &&
-          comic.publisher === publisher &&
-          comic.issue === issue
-      );
-    if (existingComic) {
-      alert("Este cómic ya existe en la librería");
-      return;
-    }
-
-    const comic = new Comic(title, publisher, price, stock, issue, year);
-    bookstore1.setComic(comic);
   };
 
   const showBooks = () => {
@@ -173,7 +288,7 @@ import { Bookstore } from "./bookstore.js";
 
   const showComics = () => {
     console.log("Show Comics");
-    const comics = bookstore1.getComic();
+    const comics = bookstore1.getComics();
     const mainContent = document.getElementById("main-content");
     // @ts-ignore
     mainContent.innerHTML = "";
@@ -194,7 +309,7 @@ import { Bookstore } from "./bookstore.js";
       });
     } else {
       // @ts-ignore
-      mainContent.innerHTML = "<p>No hay cómics en la tienda</p>";
+      mainContent.innerHTML = "<p>No hay cómics en la librería</p>";
     }
   };
 
